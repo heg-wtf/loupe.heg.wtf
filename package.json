@@ -1,0 +1,14 @@
+{
+  "name": "loupe-heg-wtf",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Loupe — private, on-device AI photo search for macOS",
+  "scripts": {
+    "test": "node --test tests/site.test.js",
+    "check": "node --check script.js && node --test tests/site.test.js",
+    "serve": "python3 -m http.server 4173"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
