@@ -11,12 +11,19 @@ const config = read('config.js');
 
 const projectTextFiles = [
   'index.html', 'styles.css', 'script.js', 'config.js', 'README.md',
-  'CHECKOUT_SETUP.md', 'privacy/index.html', 'success/index.html'
+  'privacy/index.html'
 ].map(read).join('\n');
 
 test('canonical domain and deploy CNAME are correct', () => {
   assert.equal(read('CNAME').trim(), 'loupe.heg.wtf');
   assert.match(index, /https:\/\/loupe\.heg\.wtf\//);
+});
+
+test('sitemap lists only the pages that still exist', () => {
+  const sitemap = read('sitemap.xml');
+  assert.match(sitemap, /https:\/\/loupe\.heg\.wtf\/</);
+  assert.match(sitemap, /https:\/\/loupe\.heg\.wtf\/privacy\//);
+  assert.doesNotMatch(sitemap, /success/);
 });
 
 test('current public price is consistently $14.99', () => {
@@ -25,8 +32,8 @@ test('current public price is consistently $14.99', () => {
   assert.doesNotMatch(projectTextFiles, /\$2\.99|2\.99\$/);
 });
 
-test('all paid-download pages and official icon exist', () => {
-  for (const file of ['assets/loupe-icon.png', 'privacy/index.html', 'success/index.html']) {
+test('all published pages and the official icon exist', () => {
+  for (const file of ['assets/loupe-icon.png', 'privacy/index.html']) {
     assert.ok(fs.statSync(path.join(root, file)).size > 0, `${file} should not be empty`);
   }
 });
@@ -45,9 +52,9 @@ test('purchase goes to the Mac App Store product page', () => {
 });
 
 test('the retired Lemon Squeezy checkout is fully removed', () => {
-  for (const file of ['index.html', 'script.js', 'config.js']) {
-    assert.doesNotMatch(read(file), /lemonsqueezy/i, `${file} should not reference Lemon Squeezy`);
-  }
+  assert.doesNotMatch(projectTextFiles, /lemon\s?squeezy/i, 'no file should reference Lemon Squeezy');
+  assert.ok(!fs.existsSync(path.join(root, 'success')), 'the post-checkout page should be removed');
+  assert.ok(!fs.existsSync(path.join(root, 'CHECKOUT_SETUP.md')), 'the checkout setup doc should be removed');
   assert.doesNotMatch(index, /<dialog/, 'the placeholder checkout dialog should be gone');
   assert.doesNotMatch(script, /showModal/);
 });
@@ -66,9 +73,10 @@ test('the Seoul sign-off is removed from the footer', () => {
   assert.doesNotMatch(projectTextFiles, /Made carefully in Seoul/);
 });
 
-test('privacy accurately separates app data from checkout processing', () => {
+test('privacy separates on-device app data from App Store purchase data', () => {
   const privacy = read('privacy/index.html');
   assert.match(privacy, /entirely on your Mac/);
-  assert.match(privacy, /Lemon Squeezy/);
-  assert.match(privacy, /merchant of record/);
+  assert.match(privacy, /Mac App Store/);
+  assert.match(privacy, /Apple is the seller/);
+  assert.match(privacy, /apple\.com\/legal\/privacy/);
 });

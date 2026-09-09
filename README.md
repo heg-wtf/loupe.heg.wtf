@@ -22,9 +22,7 @@ npm run check
 - `config.js` — public price and Mac App Store product URL
 - `assets/loupe-icon.png` — official app icon copied from `../hyper/denvik`
 - `privacy/` — app, website, and checkout privacy terms
-- `success/` — post-purchase download recovery guidance
 - `DESIGN_OPTIONS.md` — three MZ concepts and selected direction
-- `CHECKOUT_SETUP.md` — production payment/download activation checklist
 
 ## Purchase
 
