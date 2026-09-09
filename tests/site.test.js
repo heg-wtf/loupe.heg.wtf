@@ -31,19 +31,39 @@ test('all paid-download pages and official icon exist', () => {
   }
 });
 
-test('checkout is safely disabled until a real hosted URL is configured', () => {
-  assert.match(config, /checkoutUrl:\s*""/);
-  assert.match(script, /lemonsqueezy\\?\.com/);
-  assert.match(script, /showModal\(\)/);
-  assert.match(index, /data-buy/g);
+test('purchase goes to the Mac App Store product page', () => {
+  const appStoreUrl = 'https://apps.apple.com/us/app/loupe-ai-photo-search/id6791772300?mt=12';
+  assert.match(config, /appStoreUrl:\s*"https:\/\/apps\.apple\.com\//);
+  assert.ok(config.includes(appStoreUrl), 'config.js should hold the App Store product URL');
+  assert.ok(index.includes(appStoreUrl), 'index.html should link to the App Store product page');
+
+  const buyLinks = [...index.matchAll(/<a[^>]*data-buy[^>]*>/g)].map(match => match[0]);
+  assert.ok(buyLinks.length >= 3, 'every buy call to action should be present');
+  for (const link of buyLinks) {
+    assert.ok(link.includes(appStoreUrl), `buy link should point at the App Store: ${link}`);
+  }
 });
 
-test('every landing-page translation key has a Korean value', () => {
-  const keys = [...index.matchAll(/data-i18n="([^"]+)"/g)].map(match => match[1]);
-  assert.ok(keys.length > 40);
-  for (const key of new Set(keys)) {
-    assert.match(script, new RegExp(`(?:^|[,\\s])${key}\\s*:`), `missing Korean translation for ${key}`);
+test('the retired Lemon Squeezy checkout is fully removed', () => {
+  for (const file of ['index.html', 'script.js', 'config.js']) {
+    assert.doesNotMatch(read(file), /lemonsqueezy/i, `${file} should not reference Lemon Squeezy`);
   }
+  assert.doesNotMatch(index, /<dialog/, 'the placeholder checkout dialog should be gone');
+  assert.doesNotMatch(script, /showModal/);
+});
+
+test('the site is English only with no language switch left behind', () => {
+  const korean = /[가-힯]/;
+  for (const file of ['index.html', 'script.js', 'config.js', 'styles.css']) {
+    assert.doesNotMatch(read(file), korean, `${file} should not contain Korean text`);
+  }
+  assert.doesNotMatch(index, /data-i18n|lang-button|data-language/);
+  assert.doesNotMatch(script, /translations|setLanguage/);
+  assert.match(index, /<html lang="en">/);
+});
+
+test('the Seoul sign-off is removed from the footer', () => {
+  assert.doesNotMatch(projectTextFiles, /Made carefully in Seoul/);
 });
 
 test('privacy accurately separates app data from checkout processing', () => {
