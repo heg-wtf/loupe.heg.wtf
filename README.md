@@ -26,7 +26,7 @@ npm run check
 
 ## Purchase
 
-Loupe is sold on the Mac App Store at **$14.99 one-time**. Every buy call to action links to the
+Loupe is sold on the Mac App Store at **$9.99 one-time**. Every buy call to action links to the
 product page in `config.js` (`appStoreUrl`); there is no self-hosted checkout on this site.
 
 ## Deploy

@@ -3,7 +3,7 @@
   const appStoreUrl = config.appStoreUrl || '';
 
   document.querySelectorAll('[data-price]').forEach(el => {
-    el.textContent = config.price || '$14.99';
+    el.textContent = config.price || '$9.99';
   });
 
   if (/^https:\/\/apps\.apple\.com\//.test(appStoreUrl)) {

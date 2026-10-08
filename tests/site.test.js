@@ -26,10 +26,10 @@ test('sitemap lists only the pages that still exist', () => {
   assert.doesNotMatch(sitemap, /success/);
 });
 
-test('current public price is consistently $14.99', () => {
-  assert.match(config, /price:\s*"\$14\.99"/);
-  assert.match(index, /\$14\.99/);
-  assert.doesNotMatch(projectTextFiles, /\$2\.99|2\.99\$/);
+test('current public price is consistently $9.99', () => {
+  assert.match(config, /price:\s*"\$9\.99"/);
+  assert.match(index, /\$9\.99/);
+  assert.doesNotMatch(projectTextFiles, /\$14\.99|14\.99\$|\$2\.99|2\.99\$/);
 });
 
 test('all published pages and the official icon exist', () => {
